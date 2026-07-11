@@ -4,7 +4,7 @@ require "json"
 
 root = __dir__
 keymap = File.read(File.join(root, "config", "go60.keymap"))
-output = ARGV.fetch(0, File.join(Dir.home, "Downloads", "GO60 Layers.html"))
+output = ARGV.fetch(0, File.join(root, "layout-preview.html"))
 
 layer_defines = keymap.match(%r{/\* Automatically generated layer name defines \*/(.*?)/\* To deal}m)&.[](1)
 raise "Missing generated layer definitions" unless layer_defines

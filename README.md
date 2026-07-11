@@ -10,7 +10,7 @@ Requires Docker.
 ./build.sh
 ```
 
-The combined firmware is written to `go60.uf2` and the interactive layer map to `~/Downloads/GO60 Layers.html`.
+The combined firmware is written to `go60.uf2` and the interactive layer map to `layout-preview.html`.
 
 ## Render layers
 
@@ -18,7 +18,7 @@ The combined firmware is written to `go60.uf2` and the interactive layer map to 
 ./render-layers
 ```
 
-The interactive layer map is written to `~/Downloads/GO60 Layers.html`.
+The interactive layer map is written to `layout-preview.html`.
 
 ## Update the layout
 
