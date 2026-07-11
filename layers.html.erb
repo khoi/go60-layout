@@ -59,9 +59,13 @@
   #go60-layer-map .go60-key-corner { font-size: calc(var(--font-size-base) * 0.68); }
   #go60-layer-map .go60-key-icon { fill: none; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.8; }
   #go60-layer-map .go60-inherited { fill: var(--muted-foreground); }
+  body.go60-snapshot { color-scheme: light; padding: 0; }
+  body.go60-snapshot .viz-controls, body.go60-snapshot .go60-meta { display: none; }
 </style>
 <script>
 (() => {
+  const parameters = new URLSearchParams(location.search);
+  document.body.classList.toggle("go60-snapshot", parameters.has("snapshot"));
   const root = document.getElementById("go60-layer-map");
   const controls = root.querySelector("#go60-layer-controls");
   const status = root.querySelector("#go60-layer-status");
@@ -256,7 +260,7 @@
     const index = Number(event.key) - 1;
     if (index >= 0 && index < layers.length) render(index);
   });
-  render(0);
+  render(Number(parameters.get("layer") || 0));
 })();
 </script>
 </body>

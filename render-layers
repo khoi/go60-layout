@@ -1,10 +1,14 @@
 #!/usr/bin/env ruby
 
+require "fileutils"
 require "json"
+require "open3"
+require "tmpdir"
+require "uri"
 
 root = __dir__
 keymap = File.read(File.join(root, "config", "go60.keymap"))
-output = ARGV.fetch(0, File.join(root, "layout-preview.html"))
+output = File.expand_path(ARGV.fetch(0, File.join(root, "layout-preview.html")))
 
 layer_defines = keymap.match(%r{/\* Automatically generated layer name defines \*/(.*?)/\* To deal}m)&.[](1)
 raise "Missing generated layer definitions" unless layer_defines
@@ -48,4 +52,45 @@ end
 
 template = File.read(File.join(root, "layers.html.erb"))
 File.write(output, template.sub("__LAYERS__", JSON.generate(layers)))
-puts output
+
+browser_names = [
+  ENV["BROWSER"],
+  "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+  "google-chrome",
+  "chromium",
+  "chromium-browser"
+].compact
+browser = browser_names.lazy.map do |name|
+  next name if File.executable?(name)
+
+  ENV.fetch("PATH", "").split(File::PATH_SEPARATOR).map { |directory| File.join(directory, name) }.find { |path| File.executable?(path) }
+end.find(&:itself)
+raise "Set BROWSER to a headless browser executable" unless browser
+
+output_stem = output.delete_suffix(File.extname(output))
+images = layers.map { |layer| "#{output_stem}-#{layer[:name].downcase}.png" }
+html_url = "file://#{URI::DEFAULT_PARSER.escape(output)}"
+
+Dir.mktmpdir(".go60-layers-", File.dirname(output)) do |directory|
+  images.each_with_index do |image, index|
+    rendered = File.join(directory, File.basename(image))
+    _, error, status = Open3.capture3(
+      browser,
+      "--headless",
+      "--disable-gpu",
+      "--hide-scrollbars",
+      "--run-all-compositor-stages-before-draw",
+      "--force-color-profile=srgb",
+      "--force-device-scale-factor=2",
+      "--window-size=1070,410",
+      "--screenshot=#{rendered}",
+      "#{html_url}?snapshot=1&layer=#{index}"
+    )
+    raise "Failed to render #{image}: #{error.strip}" unless status.success? && File.size?(rendered)
+  end
+
+  images.each { |image| FileUtils.mv(File.join(directory, File.basename(image)), image) }
+end
+(Dir.glob("#{output_stem}-*.png") - images).each { |image| File.delete(image) }
+
+puts output, images
