@@ -1,0 +1,51 @@
+#!/usr/bin/env ruby
+
+require "json"
+
+root = __dir__
+keymap = File.read(File.join(root, "config", "go60.keymap"))
+output = ARGV.fetch(0, File.join(Dir.home, "Downloads", "GO60 Layers.html"))
+
+layer_defines = keymap.match(%r{/\* Automatically generated layer name defines \*/(.*?)/\* To deal}m)&.[](1)
+raise "Missing generated layer definitions" unless layer_defines
+layer_names = layer_defines.scan(/^#define LAYER_(\w+) (\d+)$/).sort_by { |_, index| index.to_i }.map(&:first)
+
+bindings = layer_names.to_h do |name|
+  body = keymap.match(/^\s*layer_#{Regexp.escape(name)}\s*\{\s*bindings\s*=\s*<(.*?)>;\s*};/m)&.[](1)
+  raise "Missing layer #{name}" unless body
+
+  entries = []
+  body.scan(/\S+/).each do |token|
+    if token.start_with?("&")
+      entries << token
+    else
+      entries[-1] = "#{entries[-1]} #{token}"
+    end
+  end
+  raise "#{name} has #{entries.length} bindings" unless entries.length == 60
+
+  [name, entries]
+end
+
+colors = keymap.scan(/^\s*#define\s+(\w+)_RGB\s+(0x[0-9A-Fa-f]{6})/).to_h.transform_values { |value| "##{value.delete_prefix("0x")}" }
+
+layers = layer_names.each_with_index.map do |name, layer_index|
+  own = bindings.fetch(name).map { |binding| binding == "&trans" ? "0" : "1" }.join
+  resolved = bindings.fetch(name).each_index.map do |key_index|
+    source = layer_index
+    source -= 1 while source.positive? && bindings.fetch(layer_names[source])[key_index] == "&trans"
+    bindings.fetch(layer_names[source])[key_index]
+  end
+  rgb = keymap.match(/^\s*#{Regexp.escape(name)}\s*\{.*?bindings\s*=\s*<(.*?)>;.*?layer-id\s*=\s*<LAYER_#{Regexp.escape(name)}>;/m)
+  layer = { name: name, bindings: resolved, own: own }
+  if rgb
+    tokens = rgb[1].scan(/\b(?:___|[A-Z]{3})\b/)
+    raise "#{name} has #{tokens.length} RGB bindings" unless tokens.length == 60
+    layer[:colors] = tokens.map { |token| token == "___" ? "#000000" : colors.fetch(token) }
+  end
+  layer
+end
+
+template = File.read(File.join(root, "layers.html.erb"))
+File.write(output, template.sub("__LAYERS__", JSON.generate(layers)))
+puts output

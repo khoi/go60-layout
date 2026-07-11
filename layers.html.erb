@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GO60 Layers</title>
+</head>
+<body>
+<div id="go60-layer-map">
+  <div class="viz-controls" id="go60-layer-controls" aria-label="GO60 layer"></div>
+  <div class="viz-row go60-meta">
+    <span id="go60-layer-status" aria-live="polite"></span>
+    <span class="text-small text-muted">Black = LED off · dot = inherited binding</span>
+  </div>
+  <svg id="go60-board" viewBox="0 0 1070 410" role="img"></svg>
+</div>
+<style>
+  :root {
+    color-scheme: light dark;
+    --background: light-dark(rgb(255 255 255), rgb(24 24 24));
+    --foreground: light-dark(rgb(26 28 31), rgb(255 255 255));
+    --muted: light-dark(rgb(26 28 31 / 10%), rgb(255 255 255 / 10%));
+    --muted-foreground: light-dark(rgb(26 28 31 / 55%), rgb(255 255 255 / 55%));
+    --border: light-dark(rgb(26 28 31 / 16%), rgb(255 255 255 / 16%));
+    --primary: light-dark(rgb(51 156 255), rgb(131 195 255));
+    --primary-foreground: light-dark(rgb(255 255 255), rgb(13 13 13));
+    --font-size-base: 16px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: var(--font-size-base);
+    margin: 0;
+    padding: 1rem;
+  }
+  .viz-controls, .viz-row { align-items: center; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .btn {
+    background: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    color: var(--foreground);
+    cursor: pointer;
+    font: inherit;
+    padding: 0.4rem 0.7rem;
+  }
+  .btn[aria-pressed="true"] { background: var(--primary); color: var(--primary-foreground); }
+  .text-small { font-size: 0.85rem; }
+  .text-muted { color: var(--muted-foreground); }
+  #go60-layer-map { color: var(--foreground); width: 100%; }
+  #go60-layer-map .go60-meta { justify-content: space-between; margin: 0.75rem 0 0.35rem; }
+  #go60-layer-map #go60-layer-status { font-weight: 500; }
+  #go60-layer-map #go60-board { display: block; height: auto; width: 100%; }
+  #go60-layer-map .go60-key { stroke: var(--border); stroke-width: 1.5; }
+  #go60-layer-map .go60-key-label { font-size: calc(var(--font-size-base) * 0.7); font-weight: 500; pointer-events: none; }
+  #go60-layer-map .go60-inherited { fill: var(--muted-foreground); }
+</style>
+<script>
+(() => {
+  const root = document.getElementById("go60-layer-map");
+  const controls = root.querySelector("#go60-layer-controls");
+  const status = root.querySelector("#go60-layer-status");
+  const board = root.querySelector("#go60-board");
+  const layers = __LAYERS__;
+  const layerNames = layers.map(layer => layer.name);
+  const keyNames = ["LH C6R1","LH C5R1","LH C4R1","LH C3R1","LH C2R1","LH C1R1","RH C1R1","RH C2R1","RH C3R1","RH C4R1","RH C5R1","RH C6R1","LH C6R2","LH C5R2","LH C4R2","LH C3R2","LH C2R2","LH C1R2","RH C1R2","RH C2R2","RH C3R2","RH C4R2","RH C5R2","RH C6R2","LH C6R3","LH C5R3","LH C4R3","LH C3R3","LH C2R3","LH C1R3","RH C1R3","RH C2R3","RH C3R3","RH C4R3","RH C5R3","RH C6R3","LH C6R4","LH C5R4","LH C4R4","LH C3R4","LH C2R4","LH C1R4","RH C1R4","RH C2R4","RH C3R4","RH C4R4","RH C5R4","RH C6R4","LH C4R5","LH C3R5","LH C2R5","RH C2R5","RH C3R5","RH C4R5","LH T1","LH T2","LH T3","RH T3","RH T2","RH T1"];
+  const positions = [];
+  for (let row = 0; row < 4; row += 1) {
+    for (let column = 0; column < 6; column += 1) positions.push({x: column, y: row + (column < 2 ? 0.5 : 0), r: 0});
+    for (let column = 0; column < 6; column += 1) positions.push({x: 11.5 + column, y: row + (column > 3 ? 0.5 : 0), r: 0});
+  }
+  positions.push({x:2,y:4,r:0},{x:3,y:4,r:0},{x:4,y:4,r:0},{x:12.5,y:4,r:0},{x:13.5,y:4,r:0},{x:14.5,y:4,r:0});
+  positions.push({x:5.2,y:4.1,r:12.5},{x:6.4,y:4.4,r:25},{x:7.5,y:4.95,r:37},{x:9.15,y:5.5,r:-37},{x:10.15,y:4.8,r:-25},{x:11.3,y:4.3,r:-12.5});
+  const keycodes = {EQUAL:"=",MINUS:"−",BSLH:"\\",FSLH:"/",SQT:"′",SINGLE_QUOTE:"′",COMMA:",",DOT:".",SEMI:";",GRAVE:"\u0060",LBKT:"[",RBKT:"]",SPACE:"Space",BSPC:"⌫",DEL:"Del",RET:"Enter",ESC:"Esc",TAB:"Tab",LEFT:"←",RIGHT:"→",UP:"↑",DOWN:"↓",HOME:"Home",END:"End",PG_UP:"Pg↑",PG_DN:"Pg↓",LSHFT:"Shift",RSHFT:"Shift",LCTRL:"Ctrl",RCTRL:"Ctrl",LALT:"Alt",RALT:"Alt",LGUI:"⌘",K_APP:"Menu",PSCRN:"PrtSc",SLCK:"ScrLk",PAUSE_BREAK:"Pause",INS:"Ins",CAPS:"Caps",C_BRI_DN:"Bright−",C_BRI_UP:"Bright+",C_PREV:"Previous",C_NEXT:"Next",C_PP:"Play",C_MUTE:"Mute",C_VOL_DN:"Volume−",C_VOL_UP:"Volume+",KP_N0:"0",KP_N1:"1",KP_N2:"2",KP_N3:"3",KP_N4:"4",KP_N5:"5",KP_N6:"6",KP_N7:"7",KP_N8:"8",KP_N9:"9",KP_MINUS:"−",KP_PLUS:"+",KP_SLASH:"/",KP_MULTIPLY:"×",KP_ENTER:"Enter",KP_DOT:".",KP_NUM:"Num"};
+  const shifted = {N1:"!",N2:"@",N3:"#",N4:"$",N5:"%",N6:"^",N7:"&",N8:"*",N9:"(",N0:")",MINUS:"_",EQUAL:"+",LBKT:"{",RBKT:"}",BSLH:"|",SEMI:":",SQT:'"',SINGLE_QUOTE:'"',COMMA:"<",DOT:">",FSLH:"?",GRAVE:"~",TAB:"⇧Tab"};
+  const formatKeycode = expression => {
+    const wrapper = expression.match(/^(LS|LG|LA|LC)\((.*)\)$/);
+    if (wrapper) {
+      if (wrapper[1] === "LS" && shifted[wrapper[2]]) return shifted[wrapper[2]];
+      return {LS:"⇧",LG:"⌘",LA:"⌥",LC:"⌃"}[wrapper[1]] + formatKeycode(wrapper[2]);
+    }
+    if (/^N\d$/.test(expression)) return expression.slice(1);
+    return keycodes[expression] || expression.replaceAll("_", " ");
+  };
+  const formatLayer = value => value.startsWith("LAYER_") ? value.slice(6) : layerNames[Number(value)];
+  const formatBinding = binding => {
+    if (binding === "&none") return [""];
+    if (binding.startsWith("&magic")) return ["Magic"];
+    if (binding === "&bootloader") return ["Boot"];
+    if (binding === "&reset" || binding === "&sys_reset") return ["Reset"];
+    if (binding === "&symb_dotdot_v1_TKZ") return [".."];
+    if (binding.startsWith("&td_LAYER_")) return [binding.slice(10)];
+    if (binding.startsWith("&kp ")) return [formatKeycode(binding.slice(4))];
+    if (binding.startsWith("&sk ")) return [formatKeycode(binding.slice(4)), "Sticky"];
+    if (binding.startsWith("&HRM_")) return [binding.split(" ").at(-1)];
+    if (binding.startsWith("&lt ")) {
+      const [, index, key] = binding.split(" ");
+      return [formatKeycode(key), formatLayer(index)];
+    }
+    if (binding.startsWith("&layer ")) return [formatLayer(binding.split(" ")[1])];
+    if (binding.startsWith("&to ")) return ["To", formatLayer(binding.split(" ")[1])];
+    if (binding.startsWith("&rgb_ug ")) return [{RGB_SPI:"Speed+",RGB_SPD:"Speed−",RGB_SAI:"Saturation+",RGB_SAD:"Saturation−",RGB_HUI:"Hue+",RGB_HUD:"Hue−",RGB_BRI:"Bright+",RGB_BRD:"Bright−",RGB_TOG:"RGB On/Off",RGB_EFF:"Effect"}[binding.split(" ")[1]]];
+    if (binding.startsWith("&bt ")) return [binding.includes("ALL") ? "Clear all" : "Clear BT"];
+    if (/^&bt_\d$/.test(binding)) return ["BT " + binding.at(-1)];
+    if (binding === "&out OUT_USB") return ["USB"];
+    if (binding.startsWith("&mod_tab")) return ["⌘ Tab"];
+    if (binding.includes("SELECT_LINE")) return ["Select","Line"];
+    if (binding.includes("SELECT_WORD")) return ["Select","Word"];
+    if (binding.includes("SELECT_NONE")) return ["Select","None"];
+    if (binding.includes("EXTEND_LINE")) return ["Extend","Line"];
+    if (binding.includes("EXTEND_WORD")) return ["Extend","Word"];
+    return [binding.replace(/^&/, "").replaceAll("_", " ")];
+  };
+  const textColor = color => {
+    if (!color) return "var(--foreground)";
+    const value = color.slice(1);
+    const red = parseInt(value.slice(0, 2), 16);
+    const green = parseInt(value.slice(2, 4), 16);
+    const blue = parseInt(value.slice(4, 6), 16);
+    return (red * 299 + green * 587 + blue * 114) / 1000 > 150 ? "#000000" : "#ffffff";
+  };
+  const svgElement = name => document.createElementNS("http://www.w3.org/2000/svg", name);
+  const render = index => {
+    const layer = layers[index];
+    controls.querySelectorAll("button").forEach((button, buttonIndex) => button.setAttribute("aria-pressed", String(buttonIndex === index)));
+    status.textContent = (index + 1) + " · " + (layer.colors ? layer.name + " · Custom Device-tree RGB override" : layer.name + " · No per-layer RGB override");
+    board.replaceChildren();
+    const title = svgElement("title");
+    title.textContent = layer.name + " layer";
+    const description = svgElement("desc");
+    description.textContent = "Physical GO60 layout showing resolved bindings and explicit per-key RGB colors.";
+    board.append(title, description);
+    layer.bindings.forEach((binding, keyIndex) => {
+      const position = positions[keyIndex];
+      const color = layer.colors?.[keyIndex];
+      const inherited = layer.own[keyIndex] === "0";
+      const group = svgElement("g");
+      group.setAttribute("transform", "translate(" + (position.x * 60 + 10) + " " + (position.y * 60 + 10) + ") rotate(" + position.r + " 27 27)");
+      group.setAttribute("aria-label", keyNames[keyIndex] + ": " + binding + (inherited ? ", inherited" : ""));
+      const keyTitle = svgElement("title");
+      keyTitle.textContent = keyNames[keyIndex] + " · " + binding + (inherited ? " · inherited" : "");
+      const rect = svgElement("rect");
+      rect.setAttribute("class", "go60-key");
+      rect.setAttribute("width", "54");
+      rect.setAttribute("height", "54");
+      rect.setAttribute("rx", "8");
+      rect.setAttribute("fill", color || "var(--muted)");
+      const labels = formatBinding(binding).filter(Boolean);
+      const text = svgElement("text");
+      text.setAttribute("class", "go60-key-label");
+      text.setAttribute("x", "27");
+      text.setAttribute("y", labels.length > 1 ? "24" : "31");
+      text.setAttribute("text-anchor", "middle");
+      text.setAttribute("fill", textColor(color));
+      labels.forEach((label, labelIndex) => {
+        const line = svgElement("tspan");
+        line.setAttribute("x", "27");
+        if (labelIndex > 0) line.setAttribute("dy", "14");
+        line.textContent = label.length > 11 ? label.slice(0, 10) + "…" : label;
+        text.append(line);
+      });
+      group.append(keyTitle, rect, text);
+      if (inherited) {
+        const marker = svgElement("circle");
+        marker.setAttribute("class", "go60-inherited");
+        marker.setAttribute("cx", "47");
+        marker.setAttribute("cy", "7");
+        marker.setAttribute("r", "2.5");
+        group.append(marker);
+      }
+      board.append(group);
+    });
+  };
+  layers.forEach((layer, index) => {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "btn";
+    button.textContent = (index + 1) + " · " + layer.name;
+    button.setAttribute("aria-label", "Layer " + (index + 1) + ": " + layer.name);
+    button.addEventListener("click", () => render(index));
+    controls.append(button);
+  });
+  document.addEventListener("keydown", event => {
+    const index = Number(event.key) - 1;
+    if (index >= 0 && index < layers.length) render(index);
+  });
+  render(0);
+})();
+</script>
+</body>
+</html>
