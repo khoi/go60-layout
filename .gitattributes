@@ -1,0 +1,3 @@
+*.keymap linguist-language=C
+*.sh text eol=lf
+Dockerfile text eol=lf
