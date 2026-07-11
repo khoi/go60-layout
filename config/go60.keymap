@@ -216,32 +216,32 @@
   // color definitions from QMK
   // https://github.com/qmk/qmk_firmware/blob/master/quantum/color.h
   //
-  #define RED_RGB 0xFF0000 // #FF0000 RED      => RED (red)
-  #define COR_RGB 0xFF7C4D // #FF7C4D CORAL    => COR (coral)
-  #define ORN_RGB 0xFF8000 // #FF8000 ORANGE   => ORN (ornj)
-  #define GDN_RGB 0xD9A521 // #D9A521 GOLDNROD => GDN (gold'nrod)
-  #define GOL_RGB 0xFFD900 // #FFD900 GOLD     => GOL (gold)
-  #define YLW_RGB 0xFFFF00 // #FFFF00 YELLOW   => YLW (yellow)
-  #define CHU_RGB 0x80FF00 // #80FF00 CHARTRSE => CHU (chartreuse)
-  #define GRN_RGB 0x00FF00 // #00FF00 GREEN    => GRN (green)
-  #define SPG_RGB 0x00FF80 // #00FF80 SPRINGRN => SPG (spring green)
-  #define CYN_RGB 0x00FFFF // #00FFFF CYAN     => CYN (sigh-an)
-  #define AZU_RGB 0x99F5FF // #99F5FF AZURE    => AZU (a-zur)
-  #define TEA_RGB 0x008080 // #008080 TEAL     => TEA (teel)
-  #define TUR_RGB 0x476E6A // #476E6A TURQUOIS => TUR (turquoise)
-  #define BLU_RGB 0x0000FF // #0000FF BLUE     => BLU (bloo)
-  #define PUR_RGB 0x7A00FF // #7A00FF PURPLE   => PUR (purp)
-  #define MAJ_RGB 0xFF00FF // #FF00FF MAGENTA  => MAJ (mah-jenta)
-  #define PNK_RGB 0xFF80BF // #FF80BF PINK     => PNK (pink)
-  #define WHT_RGB 0xFFFFFF // #FFFFFF WHITE    => WHT (white)
-  #define BLK_RGB 0x000000 // #000000 BLACK    => BLK (blak)
+  #define RED_RGB 0xE54D2E
+  #define COR_RGB 0xE5484D
+  #define ORN_RGB 0xF76B15
+  #define GDN_RGB 0x978365
+  #define GOL_RGB 0xFFC53D
+  #define YLW_RGB 0xFFE629
+  #define CHU_RGB 0xBDEE63
+  #define GRN_RGB 0x46A758
+  #define SPG_RGB 0x30A46C
+  #define CYN_RGB 0x00A2C7
+  #define AZU_RGB 0x7CE2FE
+  #define TEA_RGB 0x12A594
+  #define TUR_RGB 0x86EAD4
+  #define BLU_RGB 0x0090FF
+  #define PUR_RGB 0x6E56CF
+  #define MAJ_RGB 0xAB4ABA
+  #define PNK_RGB 0xD6409F
+  #define WHT_RGB 0xEDEEF0
+  #define BLK_RGB 0x000000
 
   //
   // color definitions from MoErgo
   // https://github.com/moergo-sc/zmk/blob/aca523dfce9b6447ffd19d833b791d44f1f286de/app/src/rgb_underglow.c#L259-L265
   //
-  #define DUG_RGB 0x00ff68 // #00ff68 DULL_GRN => DUG (dull green)
-  #define LAC_RGB 0x6b1fce // #6b1fce LILAC    => LAC (lilac)
+  #define DUG_RGB 0x29A383
+  #define LAC_RGB 0x5B5BD6
 
   //
   // underglow for the colors above
