@@ -670,6 +670,7 @@
 };
 
 &cirque_rh_listener {
+    input-processors = <&zip_xy_scaler 9 1>;
 };
 
 /* System behavior and macros */
