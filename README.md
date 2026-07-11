@@ -9,3 +9,8 @@ The interactive layer map is written to [./layout-preview.html](./layout-preview
 ./build.sh
 ```
 
+## Flash
+
+```sh
+./flash.sh
+```
