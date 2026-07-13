@@ -117,11 +117,11 @@ printf 'Firmware: %s\n' "$firmware"
 printf 'Both halves must receive this file. Keep this terminal open.\n'
 printf 'Press Control-C at any time to stop waiting.\n'
 
-flash_half right GO60RHBOOT 'Magic + \' K
-
-printf '\nDisconnect the right half, then prepare the left half.\n'
-
 flash_half left GO60LHBOOT 'Magic + Tab' D
+
+printf '\nDisconnect the left half, then prepare the right half.\n'
+
+flash_half right GO60RHBOOT 'Magic + \' K
 
 printf '\nBoth halves are flashed.\n'
 printf 'Disconnect USB, switch both halves off, then switch both on.\n'
