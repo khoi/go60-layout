@@ -32,6 +32,7 @@ bindings = layer_names.to_h do |name|
 end
 
 colors = keymap.scan(/^\s*#define\s+(\w+)_RGB\s+(0x[0-9A-Fa-f]{6})/).to_h.transform_values { |value| "##{value.delete_prefix("0x")}" }
+rgb_binding_sets = keymap.scan(/^\s*#define[ \t]+(\w+)[ \t]+\\\n((?:[^\n]*\\\n)*[^\n]*)/).to_h
 
 layers = layer_names.each_with_index.map do |name, layer_index|
   own = bindings.fetch(name).map { |binding| binding == "&trans" ? "0" : "1" }.join
@@ -43,7 +44,8 @@ layers = layer_names.each_with_index.map do |name, layer_index|
   rgb = keymap.match(/^\s*#{Regexp.escape(name)}\s*\{.*?bindings\s*=\s*<(.*?)>;.*?layer-id\s*=\s*<LAYER_#{Regexp.escape(name)}>;/m)
   layer = { name: name, bindings: resolved, own: own }
   if rgb
-    tokens = rgb[1].scan(/\b(?:___|[A-Z]{3})\b/)
+    source = rgb_binding_sets.fetch(rgb[1].strip, rgb[1])
+    tokens = source.scan(/\b(?:___|[A-Z]{3})\b/)
     raise "#{name} has #{tokens.length} RGB bindings" unless tokens.length == 60
     layer[:colors] = tokens.map { |token| token == "___" ? "#000000" : colors.fetch(token) }
   end

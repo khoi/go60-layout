@@ -283,6 +283,13 @@
   #define WRP CHU
   #define SLO COR
 
+  #define BASE_TYPING_RGB \
+    ___ ___ ___ ___ ___ ___                                     ___ ___ ___ ___ ___ ___ \
+    ___ ___ ___ ___ ___ ___                                     ___ ___ ___ ___ ___ ___ \
+    ___ ___ ___ ___ ___ ___                                     ___ ___ ___ ___ ___ ___ \
+    MAJ ___ ___ ___ ___ ___                                     ___ ___ ___ ___ ___ GRN \
+            ___ ___ ___                                             ___ ___ ___ \
+                                 CYN GRN ___     ___ ___ YLW
 
 
   // ==== PER-KEY-RGB <section begins> ====
@@ -290,6 +297,15 @@
     underglow-layer {
       compatible = "zmk,underglow-layer";
 
+      Base {
+        bindings = <BASE_TYPING_RGB>;
+        layer-id = <LAYER_Base>;
+      };
+
+      Typing {
+        bindings = <BASE_TYPING_RGB>;
+        layer-id = <LAYER_Typing>;
+      };
 
       #ifdef LAYER_HRM_WinLinx
       HRM_WinLinx {
