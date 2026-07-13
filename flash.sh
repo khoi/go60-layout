@@ -120,7 +120,6 @@ printf 'Press Control-C at any time to stop waiting.\n'
 flash_half right GO60RHBOOT 'Magic + \' K
 
 printf '\nDisconnect the right half, then prepare the left half.\n'
-read -r -p 'Press Return to continue: '
 
 flash_half left GO60LHBOOT 'Magic + Tab' D
 
