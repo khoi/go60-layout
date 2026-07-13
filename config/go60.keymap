@@ -283,10 +283,10 @@
   #define WRP CHU
   #define SLO COR
 
-  #define BASE_TYPING_RGB \
+  #define BASE_TYPING_RGB(A, S, D, F, J, K, L, SEMI) \
     ___ ___ ___ ___ ___ ___                                     ___ ___ ___ ___ ___ ___ \
     ___ ___ ___ ___ ___ ___                                     ___ ___ ___ ___ ___ ___ \
-    ___ ___ ___ ___ ___ ___                                     ___ ___ ___ ___ ___ ___ \
+    ___ A   S   D   F   ___                                     ___ J   K   L   SEMI ___ \
     MAJ ___ ___ ___ ___ ___                                     ___ ___ ___ ___ ___ GRN \
             ___ ___ ___                                             ___ ___ ___ \
                                  CYN GRN ___     ___ ___ YLW
@@ -298,12 +298,12 @@
       compatible = "zmk,underglow-layer";
 
       Base {
-        bindings = <BASE_TYPING_RGB>;
+        bindings = <BASE_TYPING_RGB(CHU, CYN, MAJ, YLW, YLW, MAJ, CYN, CHU)>;
         layer-id = <LAYER_Base>;
       };
 
       Typing {
-        bindings = <BASE_TYPING_RGB>;
+        bindings = <BASE_TYPING_RGB(___, ___, ___, ___, ___, ___, ___, ___)>;
         layer-id = <LAYER_Typing>;
       };
 
