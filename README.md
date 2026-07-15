@@ -2,7 +2,7 @@
 
 My personal firmware for the Moergo Go60 layout
 Open the [interactive layer map](./layout-preview.html).
-Print the [compact A4 layer map](./output/pdf/go60-layout.pdf).
+Print the [single-page A3 layer map](./output/pdf/go60-layout.pdf).
 
 ## Layers
 
