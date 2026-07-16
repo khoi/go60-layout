@@ -61,6 +61,19 @@
         bindings = <&mo layer>, <&to layer>; \
 )
 
+#define ZMK_HRM(name, tapping_term, prior_idle, hold_triggers) \
+    name: name { \
+        compatible = "zmk,behavior-hold-tap"; \
+        #binding-cells = <2>; \
+        tapping-term-ms = <tapping_term>; \
+        bindings = <&kp>, <&kp>; \
+        flavor = "balanced"; \
+        quick-tap-ms = <300>; \
+        require-prior-idle-ms = <prior_idle>; \
+        hold-trigger-key-positions = <hold_triggers>; \
+        hold-trigger-on-release; \
+    };
+
 
 
 
@@ -146,6 +159,9 @@
 #define THUMB_KEYS \
   POS_LH_T1 POS_LH_T2 POS_LH_T3 \
   POS_RH_T1 POS_RH_T2 POS_RH_T3
+
+#define HRM_LEFT_HOLD_TRIGGERS RIGHT_HAND_KEYS THUMB_KEYS
+#define HRM_RIGHT_HOLD_TRIGGERS LEFT_HAND_KEYS THUMB_KEYS
 
 /* Environment and metadata defines */
 #define KB_TYPE_GLOVE_80 1
@@ -954,32 +970,14 @@
 
         ZMK_TD_LAYER(td_LAYER_Keypad, 5)
 
-        // Homerow Mod for the left index finger - TailorKey.
-        // For advanced tuning of HRM values, see: https://docs.google.com/spreadsheets/d/1ESgObQelyz4lnKlfwLYsmofLJulOMK5RdGBsopLe2o8
-        HRM_left_hand_v1_TKZ: HRM_left_hand_v1_TKZ {
-            compatible = "zmk,behavior-hold-tap";
-            #binding-cells = <2>;
-            tapping-term-ms = <280>;
-            bindings = <&kp>, <&kp>;
-            flavor = "balanced";
-            quick-tap-ms = <175>;
-            require-prior-idle-ms = <150>;
-            hold-trigger-key-positions = <POS_RH_T3 POS_RH_T2 POS_RH_T1 POS_RH_C1R1 POS_RH_C2R1 POS_RH_C3R1 POS_RH_C4R1 POS_RH_C5R1 POS_RH_C1R2 POS_RH_C2R2 POS_RH_C3R2 POS_RH_C4R2 POS_RH_C5R2 POS_RH_C1R3 POS_RH_C2R3 POS_RH_C3R3 POS_RH_C4R3 POS_RH_C5R3 POS_RH_C1R4 POS_RH_C2R4 POS_RH_C3R4 POS_RH_C4R4 POS_RH_C5R4 POS_RH_C2R5 POS_RH_C3R5 POS_RH_C4R5 POS_RH_C6R1 POS_RH_C6R2 POS_RH_C6R3 POS_RH_C6R4 POS_LH_T2 POS_LH_T3 POS_LH_T1>;
-            hold-trigger-on-release;
-        };
-
-        // Homerow Mod for the right index finger - TailorKey
-        HRM_right_hand_v1_TKZ: HRM_right_hand_v1_TKZ {
-            compatible = "zmk,behavior-hold-tap";
-            #binding-cells = <2>;
-            tapping-term-ms = <280>;
-            bindings = <&kp>, <&kp>;
-            flavor = "balanced";
-            quick-tap-ms = <175>;
-            require-prior-idle-ms = <150>;
-            hold-trigger-key-positions = <POS_LH_T3 POS_LH_T2 POS_LH_T1 POS_LH_C6R1 POS_LH_C5R1 POS_LH_C4R1 POS_LH_C3R1 POS_LH_C2R1 POS_LH_C6R2 POS_LH_C5R2 POS_LH_C4R2 POS_LH_C3R2 POS_LH_C2R2 POS_LH_C1R2 POS_LH_C6R3 POS_LH_C5R3 POS_LH_C4R3 POS_LH_C3R3 POS_LH_C2R3 POS_LH_C1R3 POS_LH_C6R4 POS_LH_C5R4 POS_LH_C4R4 POS_LH_C3R4 POS_LH_C2R4 POS_LH_C1R4 POS_LH_C4R5 POS_LH_C3R5 POS_LH_C2R5 POS_LH_C1R1 POS_RH_T3 POS_RH_T2 POS_RH_T1>;
-            hold-trigger-on-release;
-        };
+        ZMK_HRM(hrm_left_index, 180, 100, HRM_LEFT_HOLD_TRIGGERS)
+        ZMK_HRM(hrm_left_middle, 210, 150, HRM_LEFT_HOLD_TRIGGERS)
+        ZMK_HRM(hrm_left_ring, 240, 150, HRM_LEFT_HOLD_TRIGGERS)
+        ZMK_HRM(hrm_left_pinky, 270, 150, HRM_LEFT_HOLD_TRIGGERS)
+        ZMK_HRM(hrm_right_index, 180, 100, HRM_RIGHT_HOLD_TRIGGERS)
+        ZMK_HRM(hrm_right_middle, 210, 150, HRM_RIGHT_HOLD_TRIGGERS)
+        ZMK_HRM(hrm_right_ring, 240, 150, HRM_RIGHT_HOLD_TRIGGERS)
+        ZMK_HRM(hrm_right_pinky, 270, 150, HRM_RIGHT_HOLD_TRIGGERS)
     };
 };
 
@@ -1029,7 +1027,7 @@
             bindings = <
             &kp EQUAL                         &kp N1                        &kp N2                        &kp N3                         &kp N4  &kp N5                                                                                                     &kp N6                          &kp N7                         &kp N8                         &kp N9                             &kp N0         &kp MINUS
               &kp TAB                          &kp Q                         &kp W                         &kp E                          &kp R   &kp T                                                                                                      &kp Y                           &kp U                          &kp I                          &kp O                              &kp P          &kp BSLH
-              &kp ESC  &HRM_left_hand_v1_TKZ LCTRL A  &HRM_left_hand_v1_TKZ LALT S  &HRM_left_hand_v1_TKZ LGUI D  &HRM_left_hand_v1_TKZ LSHFT F   &kp G                                                                                                      &kp H  &HRM_right_hand_v1_TKZ RSHFT J  &HRM_right_hand_v1_TKZ LGUI K  &HRM_right_hand_v1_TKZ LALT L  &HRM_right_hand_v1_TKZ RCTRL SEMI           &kp SQT
+              &kp ESC  &hrm_left_pinky LCTRL A  &hrm_left_ring LALT S  &hrm_left_middle LGUI D  &hrm_left_index LSHFT F   &kp G                                                                                                      &kp H  &hrm_right_index RSHFT J  &hrm_right_middle LGUI K  &hrm_right_ring LALT L  &hrm_right_pinky RCTRL SEMI           &kp SQT
  &magic LAYER_Magic 0                          &kp Z                         &kp X                         &kp C                          &kp V   &kp B                                                                                                      &kp N                           &kp M                      &kp COMMA                        &kp DOT                           &kp FSLH  &td_LAYER_Keypad
                                                                           &kp HOME                      &kp LEFT                      &kp RIGHT                                                                                                                                           &kp DOWN                         &kp UP                        &kp END
                                                                                                                                                          &lt LAYER_Cursor BSPC  &lt LAYER_Keypad DEL  &kp LSHFT  &kp RALT  &kp RET  &lt LAYER_Symbol SPACE

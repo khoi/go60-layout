@@ -146,7 +146,7 @@
       const modifier = modifiers[expression];
       return modifier ? legend(modifier.symbol, modifier.name + " Sticky") : legend(formatKeycode(expression), "Sticky");
     }
-    if (binding.startsWith("&HRM_")) {
+    if (binding.startsWith("&hrm_")) {
       const parts = binding.split(" ");
       const modifier = modifiers[parts.at(-2)];
       return legend(formatKeycode(parts.at(-1)), modifier?.name || formatKeycode(parts.at(-2)), "", modifier?.symbol || "");
