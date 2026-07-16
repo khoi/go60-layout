@@ -971,13 +971,13 @@
         ZMK_TD_LAYER(td_LAYER_Keypad, 5)
 
         ZMK_HRM(hrm_left_index, 180, 100, HRM_LEFT_HOLD_TRIGGERS)
-        ZMK_HRM(hrm_left_middle, 210, 150, HRM_LEFT_HOLD_TRIGGERS)
-        ZMK_HRM(hrm_left_ring, 240, 150, HRM_LEFT_HOLD_TRIGGERS)
-        ZMK_HRM(hrm_left_pinky, 270, 150, HRM_LEFT_HOLD_TRIGGERS)
+        ZMK_HRM(hrm_left_middle, 190, 150, HRM_LEFT_HOLD_TRIGGERS)
+        ZMK_HRM(hrm_left_ring, 220, 150, HRM_LEFT_HOLD_TRIGGERS)
+        ZMK_HRM(hrm_left_pinky, 250, 150, HRM_LEFT_HOLD_TRIGGERS)
         ZMK_HRM(hrm_right_index, 180, 100, HRM_RIGHT_HOLD_TRIGGERS)
-        ZMK_HRM(hrm_right_middle, 210, 150, HRM_RIGHT_HOLD_TRIGGERS)
-        ZMK_HRM(hrm_right_ring, 240, 150, HRM_RIGHT_HOLD_TRIGGERS)
-        ZMK_HRM(hrm_right_pinky, 270, 150, HRM_RIGHT_HOLD_TRIGGERS)
+        ZMK_HRM(hrm_right_middle, 190, 150, HRM_RIGHT_HOLD_TRIGGERS)
+        ZMK_HRM(hrm_right_ring, 220, 150, HRM_RIGHT_HOLD_TRIGGERS)
+        ZMK_HRM(hrm_right_pinky, 250, 150, HRM_RIGHT_HOLD_TRIGGERS)
     };
 };
 
